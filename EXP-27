@@ -1,0 +1,164 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMTEBNFybEzm4bdHRjHaGbY",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-27\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import re\n",
+        "\n",
+        "raw_log_lines = [\n",
+        "    \"2026-07-25 09:15:01 INFO auth: user=jdoe action=login_success ip=10.0.0.5\",\n",
+        "    \"2026-07-25 09:17:32 WARN auth: user=jdoe action=login_failed ip=10.0.0.5\",\n",
+        "    \"2026-07-25 09:20:10 ERROR firewall: action=blocked ip=45.33.32.156\",\n",
+        "]\n",
+        "\n",
+        "def logstash_parse(line):\n",
+        "    pattern = r'(?P<date>\\S+) (?P<time>\\S+) (?P<level>\\w+) (?P<source>\\w+): (?P<fields>.*)'\n",
+        "\n",
+        "    match = re.match(pattern, line)\n",
+        "\n",
+        "    if not match:\n",
+        "        return None\n",
+        "\n",
+        "    doc = match.groupdict()\n",
+        "\n",
+        "    field_str = doc.pop(\"fields\")\n",
+        "\n",
+        "    for kv in field_str.split():\n",
+        "        if \"=\" in kv:\n",
+        "            key, value = kv.split(\"=\", 1)\n",
+        "            doc[key] = value\n",
+        "\n",
+        "    return doc\n",
+        "\n",
+        "\n",
+        "elasticsearch_index = [\n",
+        "    logstash_parse(line)\n",
+        "    for line in raw_log_lines\n",
+        "]\n",
+        "\n",
+        "def es_search(index, **query):\n",
+        "    return [\n",
+        "        doc\n",
+        "        for doc in index\n",
+        "        if all(doc.get(k) == v for k, v in query.items())\n",
+        "    ]\n",
+        "\n",
+        "\n",
+        "def kibana_aggregate(index, field):\n",
+        "    aggregation = {}\n",
+        "\n",
+        "    for doc in index:\n",
+        "        key = doc.get(field, \"unknown\")\n",
+        "        aggregation[key] = aggregation.get(key, 0) + 1\n",
+        "\n",
+        "    return aggregation\n",
+        "\n",
+        "\n",
+        "parsed_ok = all(doc is not None for doc in elasticsearch_index)\n",
+        "\n",
+        "failed_search = es_search(\n",
+        "    elasticsearch_index,\n",
+        "    action=\"login_failed\"\n",
+        ")\n",
+        "\n",
+        "level_aggregation = kibana_aggregate(\n",
+        "    elasticsearch_index,\n",
+        "    \"level\"\n",
+        ")\n",
+        "\n",
+        "print(\"Parsing Successful:\", parsed_ok)\n",
+        "\n",
+        "print(\"\\nParsed Documents:\")\n",
+        "for doc in elasticsearch_index:\n",
+        "    print(doc)\n",
+        "\n",
+        "print(\"\\nSearch: action=login_failed\")\n",
+        "for doc in failed_search:\n",
+        "    print(doc)\n",
+        "\n",
+        "print(\"\\nKibana Aggregation by Level:\")\n",
+        "for level, count in level_aggregation.items():\n",
+        "    print(f\"{level}: {count}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "H4SDa0r0GRwu",
+        "outputId": "ba7cad88-8c33-4bc6-bcfa-e9a457e3346e"
+      },
+      "execution_count": 34,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Parsing Successful: True\n",
+            "\n",
+            "Parsed Documents:\n",
+            "{'date': '2026-07-25', 'time': '09:15:01', 'level': 'INFO', 'source': 'auth', 'user': 'jdoe', 'action': 'login_success', 'ip': '10.0.0.5'}\n",
+            "{'date': '2026-07-25', 'time': '09:17:32', 'level': 'WARN', 'source': 'auth', 'user': 'jdoe', 'action': 'login_failed', 'ip': '10.0.0.5'}\n",
+            "{'date': '2026-07-25', 'time': '09:20:10', 'level': 'ERROR', 'source': 'firewall', 'action': 'blocked', 'ip': '45.33.32.156'}\n",
+            "\n",
+            "Search: action=login_failed\n",
+            "{'date': '2026-07-25', 'time': '09:17:32', 'level': 'WARN', 'source': 'auth', 'user': 'jdoe', 'action': 'login_failed', 'ip': '10.0.0.5'}\n",
+            "\n",
+            "Kibana Aggregation by Level:\n",
+            "INFO: 1\n",
+            "WARN: 1\n",
+            "ERROR: 1\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 106
+        },
+        "id": "OMsL00ZUDKTQ",
+        "outputId": "37a1e732-7e80-48eb-c2e1-f66d75dc1880"
+      },
+      "execution_count": 31,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "SyntaxError",
+          "evalue": "unterminated string literal (detected at line 4) (1000260285.py, line 4)",
+          "traceback": [
+            "\u001b[0;36m  File \u001b[0;32m\"/tmp/ipykernel_4221/1000260285.py\"\u001b[0;36m, line \u001b[0;32m4\u001b[0m\n\u001b[0;31m    \"Nmap\": {\"purpose\": \"network scanning\", \"keywords\": [\"network scanning\", \"open\u001b[0m\n\u001b[0m                                                                             ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m unterminated string literal (detected at line 4)\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
