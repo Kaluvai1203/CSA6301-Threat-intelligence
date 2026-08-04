@@ -1,0 +1,130 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPwMrO9VCBWof3z6DrpKPOF",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-19\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "def normalize_ioc(raw):\n",
+        "    return {\n",
+        "        \"type\": raw.get(\"type\", \"\").lower(),\n",
+        "        \"value\": raw.get(\"value\", \"\").strip().lower(),\n",
+        "        \"source\": raw.get(\"source\", \"unknown\"),\n",
+        "        \"severity\": raw.get(\"severity\", \"medium\").lower(),\n",
+        "    }\n",
+        "\n",
+        "raw_feed = [\n",
+        "    {\n",
+        "        \"type\": \"IP\",\n",
+        "        \"value\": \" 45.33.32.156 \",\n",
+        "        \"source\": \"MISP\",\n",
+        "        \"severity\": \"High\"\n",
+        "    },\n",
+        "    {\n",
+        "        \"type\": \"Domain\",\n",
+        "        \"value\": \"Malicious-Site.COM\",\n",
+        "        \"source\": \"VirusTotal\",\n",
+        "        \"severity\": \"Critical\"\n",
+        "    },\n",
+        "    {\n",
+        "        \"type\": \"Hash\",\n",
+        "        \"value\": \"5d41402abc4b2a76b9719d911017c592\",\n",
+        "        \"source\": \"AlienVault OTX\",\n",
+        "        \"severity\": \"Medium\"\n",
+        "    }\n",
+        "]\n",
+        "\n",
+        "tip_database = [normalize_ioc(r) for r in raw_feed]\n",
+        "\n",
+        "internal_firewall_logs = [\n",
+        "    {\n",
+        "        \"src_ip\": \"45.33.32.156\",\n",
+        "        \"dest\": \"internal-server-1\",\n",
+        "        \"action\": \"connection attempt\"\n",
+        "    },\n",
+        "    {\n",
+        "        \"src_ip\": \"10.0.0.5\",\n",
+        "        \"dest\": \"internal-server-2\",\n",
+        "        \"action\": \"connection attempt\"\n",
+        "    }\n",
+        "]\n",
+        "\n",
+        "\n",
+        "def correlate_with_tip(logs, tip_db):\n",
+        "    ioc_ips = {ioc[\"value\"] for ioc in tip_db if ioc[\"type\"] == \"ip\"}\n",
+        "\n",
+        "    alerts = []\n",
+        "\n",
+        "    for log in logs:\n",
+        "        if log[\"src_ip\"] in ioc_ips:\n",
+        "            alerts.append({\n",
+        "                \"alert\": \"Known malicious IP contacted internal system\",\n",
+        "                \"log\": log\n",
+        "            })\n",
+        "\n",
+        "    return alerts\n",
+        "\n",
+        "\n",
+        "alerts = correlate_with_tip(internal_firewall_logs, tip_database)\n",
+        "\n",
+        "print(f\"Normalized {len(tip_database)} IOCs:\")\n",
+        "\n",
+        "for ioc in tip_database:\n",
+        "    print(\" \", ioc)\n",
+        "\n",
+        "print(f\"\\nGenerated {len(alerts)} alert(s):\")\n",
+        "\n",
+        "for alert in alerts:\n",
+        "    print(alert)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "OMsL00ZUDKTQ",
+        "outputId": "056c6ff4-1640-4fe1-d17a-e4b7e52e089b"
+      },
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Normalized 3 IOCs:\n",
+            "  {'type': 'ip', 'value': '45.33.32.156', 'source': 'MISP', 'severity': 'high'}\n",
+            "  {'type': 'domain', 'value': 'malicious-site.com', 'source': 'VirusTotal', 'severity': 'critical'}\n",
+            "  {'type': 'hash', 'value': '5d41402abc4b2a76b9719d911017c592', 'source': 'AlienVault OTX', 'severity': 'medium'}\n",
+            "\n",
+            "Generated 1 alert(s):\n",
+            "{'alert': 'Known malicious IP contacted internal system', 'log': {'src_ip': '45.33.32.156', 'dest': 'internal-server-1', 'action': 'connection attempt'}}\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
