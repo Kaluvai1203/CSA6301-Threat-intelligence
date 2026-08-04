@@ -1,0 +1,82 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOweLERKEoaFdneSHfca3i0",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-7\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 11,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "pR-P4nGQ3h4k",
+        "outputId": "d17c76ba-9c10-4db6-cc23-2f67d7c55a32"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Failed login attempts by IP:\n",
+            " 203.0.113.99: 5 attempts\n",
+            " -> ALERT: Possible brute-force attack from 203.0.113.99\n"
+          ]
+        }
+      ],
+      "source": [
+        "import re\n",
+        "from collections import Counter\n",
+        "\n",
+        "with open(\"login_attempts.log\", \"w\") as f:\n",
+        "    f.write(\"2026-07-08 09:00:01 LOGIN SUCCESS user=alice ip=10.0.0.5\\n\")\n",
+        "    f.write(\"2026-07-08 09:01:15 LOGIN FAILED user=admin ip=203.0.113.99\\n\")\n",
+        "    f.write(\"2026-07-08 09:01:20 LOGIN FAILED user=admin ip=203.0.113.99\\n\")\n",
+        "    f.write(\"2026-07-08 09:01:25 LOGIN FAILED user=admin ip=203.0.113.99\\n\")\n",
+        "    f.write(\"2026-07-08 09:01:30 LOGIN FAILED user=admin ip=203.0.113.99\\n\")\n",
+        "    f.write(\"2026-07-08 09:01:35 LOGIN FAILED user=admin ip=203.0.113.99\\n\")\n",
+        "    f.write(\"2026-07-08 09:02:00 LOGIN SUCCESS user=bob ip=10.0.0.8\\n\")\n",
+        "\n",
+        "failed_by_ip = Counter()\n",
+        "\n",
+        "with open(\"login_attempts.log\") as f:\n",
+        "    for line in f:\n",
+        "        if \"LOGIN FAILED\" in line:\n",
+        "            match = re.search(r\"ip=(\\S+)\", line)\n",
+        "            if match:\n",
+        "                failed_by_ip[match.group(1)] += 1\n",
+        "\n",
+        "print(\"Failed login attempts by IP:\")\n",
+        "\n",
+        "for ip, count in failed_by_ip.items():\n",
+        "    print(f\" {ip}: {count} attempts\")\n",
+        "\n",
+        "    if count >= 5:\n",
+        "        print(f\" -> ALERT: Possible brute-force attack from {ip}\")"
+      ]
+    }
+  ]
+}
