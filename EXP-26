@@ -1,0 +1,155 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPBNO0ReYge/indGR+l7ky4",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-26\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "splunk_index = [\n",
+        "    {\n",
+        "        \"_time\": \"09:15\",\n",
+        "        \"source\": \"auth\",\n",
+        "        \"user\": \"jdoe\",\n",
+        "        \"action\": \"login_success\"\n",
+        "    },\n",
+        "    {\n",
+        "        \"_time\": \"09:17\",\n",
+        "        \"source\": \"auth\",\n",
+        "        \"user\": \"jdoe\",\n",
+        "        \"action\": \"login_failed\"\n",
+        "    },\n",
+        "    {\n",
+        "        \"_time\": \"09:18\",\n",
+        "        \"source\": \"auth\",\n",
+        "        \"user\": \"jdoe\",\n",
+        "        \"action\": \"login_failed\"\n",
+        "    },\n",
+        "    {\n",
+        "        \"_time\": \"09:20\",\n",
+        "        \"source\": \"firewall\",\n",
+        "        \"ip\": \"45.33.32.156\",\n",
+        "        \"action\": \"blocked\"\n",
+        "    },\n",
+        "    {\n",
+        "        \"_time\": \"09:21\",\n",
+        "        \"source\": \"auth\",\n",
+        "        \"user\": \"asmith\",\n",
+        "        \"action\": \"login_success\"\n",
+        "    }\n",
+        "]\n",
+        "\n",
+        "def spl_search(index, **filters):\n",
+        "    results = index\n",
+        "\n",
+        "    for field, value in filters.items():\n",
+        "        results = [\n",
+        "            record for record in results\n",
+        "            if record.get(field) == value\n",
+        "        ]\n",
+        "\n",
+        "    return results\n",
+        "\n",
+        "\n",
+        "def spl_stats_count_by(index, field):\n",
+        "    counts = {}\n",
+        "\n",
+        "    for record in index:\n",
+        "        key = record.get(field, \"unknown\")\n",
+        "        counts[key] = counts.get(key, 0) + 1\n",
+        "\n",
+        "    return counts\n",
+        "\n",
+        "\n",
+        "failed_logins = spl_search(\n",
+        "    splunk_index,\n",
+        "    source=\"auth\",\n",
+        "    action=\"login_failed\"\n",
+        ")\n",
+        "\n",
+        "counts_by_source = spl_stats_count_by(\n",
+        "    splunk_index,\n",
+        "    \"source\"\n",
+        ")\n",
+        "\n",
+        "print(\"Search: source=auth action=login_failed\")\n",
+        "for event in failed_logins:\n",
+        "    print(event)\n",
+        "\n",
+        "print(\"\\nStats Count by Source\")\n",
+        "for source, count in counts_by_source.items():\n",
+        "    print(f\"{source}: {count}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "H4SDa0r0GRwu",
+        "outputId": "2175d430-3c65-4310-f01b-6737147f8ce2"
+      },
+      "execution_count": 33,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Search: source=auth action=login_failed\n",
+            "{'_time': '09:17', 'source': 'auth', 'user': 'jdoe', 'action': 'login_failed'}\n",
+            "{'_time': '09:18', 'source': 'auth', 'user': 'jdoe', 'action': 'login_failed'}\n",
+            "\n",
+            "Stats Count by Source\n",
+            "auth: 4\n",
+            "firewall: 1\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 106
+        },
+        "id": "OMsL00ZUDKTQ",
+        "outputId": "37a1e732-7e80-48eb-c2e1-f66d75dc1880"
+      },
+      "execution_count": 31,
+      "outputs": [
+        {
+          "output_type": "error",
+          "ename": "SyntaxError",
+          "evalue": "unterminated string literal (detected at line 4) (1000260285.py, line 4)",
+          "traceback": [
+            "\u001b[0;36m  File \u001b[0;32m\"/tmp/ipykernel_4221/1000260285.py\"\u001b[0;36m, line \u001b[0;32m4\u001b[0m\n\u001b[0;31m    \"Nmap\": {\"purpose\": \"network scanning\", \"keywords\": [\"network scanning\", \"open\u001b[0m\n\u001b[0m                                                                             ^\u001b[0m\n\u001b[0;31mSyntaxError\u001b[0m\u001b[0;31m:\u001b[0m unterminated string literal (detected at line 4)\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
