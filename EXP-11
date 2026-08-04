@@ -1,0 +1,71 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyM6qon5ZAaReafyDw5k0K2i",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-11\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 15,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "pR-P4nGQ3h4k",
+        "outputId": "f00a33d3-ff5d-449d-ad4d-855c5ffaa854"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Encrypted (what an eavesdropper sees):\n",
+            "b'gAAAAABqcWpHZjL_n20fmu9Z2e6UdK57Wv1n6jCL_AfDQqCiEdtiEYB1d2oYy4xMy2wDwqolMQcVNGfIqYlZLy9bI7c-lHlJNYShxlgGa_YFUVJ3604ep78='\n",
+            "\n",
+            "Decrypted (what the receiver reads):\n",
+            "Transfer $500 to account 12345\n"
+          ]
+        }
+      ],
+      "source": [
+        "from cryptography.fernet import Fernet\n",
+        "\n",
+        "key = Fernet.generate_key()\n",
+        "cipher = Fernet(key)\n",
+        "\n",
+        "message = b\"Transfer $500 to account 12345\"\n",
+        "encrypted = cipher.encrypt(message)\n",
+        "\n",
+        "print(\"Encrypted (what an eavesdropper sees):\")\n",
+        "print(encrypted)\n",
+        "\n",
+        "decrypted = cipher.decrypt(encrypted)\n",
+        "\n",
+        "print(\"\\nDecrypted (what the receiver reads):\")\n",
+        "print(decrypted.decode())"
+      ]
+    }
+  ]
+}
