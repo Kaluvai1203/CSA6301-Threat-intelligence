@@ -1,0 +1,125 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPm7xnl/Pk/Vvpzt5sp6hCf",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-22\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "raw_events = [\n",
+        "    {\n",
+        "        \"source\": \"firewall\",\n",
+        "        \"ip\": \"45.33.32.156\",\n",
+        "        \"event\": \"blocked\"\n",
+        "    },\n",
+        "    {\n",
+        "        \"source\": \"antivirus\",\n",
+        "        \"host\": \"WIN10-05\",\n",
+        "        \"event\": \"malware_detected\",\n",
+        "        \"file\": \"invoice.exe\"\n",
+        "    },\n",
+        "    {\n",
+        "        \"source\": \"server\",\n",
+        "        \"event\": \"login_success\",\n",
+        "        \"user\": \"admin\"\n",
+        "    },\n",
+        "]\n",
+        "\n",
+        "def normalize(events):\n",
+        "    return [\n",
+        "        {\n",
+        "            \"source\": e[\"source\"],\n",
+        "            \"event_type\": e[\"event\"],\n",
+        "            \"severity\": (\n",
+        "                \"high\"\n",
+        "                if e[\"event\"] in (\"malware_detected\", \"blocked\")\n",
+        "                else \"low\"\n",
+        "            ),\n",
+        "        }\n",
+        "        for e in events\n",
+        "    ]\n",
+        "\n",
+        "def correlation_engine(normalized_events):\n",
+        "    return [\n",
+        "        event\n",
+        "        for event in normalized_events\n",
+        "        if event[\"severity\"] == \"high\"\n",
+        "    ]\n",
+        "\n",
+        "def generate_alerts(high_severity_events):\n",
+        "    return [\n",
+        "        f\"ALERT: {event['source']} reported {event['event_type']}\"\n",
+        "        for event in high_severity_events\n",
+        "    ]\n",
+        "\n",
+        "normalized = normalize(raw_events)\n",
+        "correlated = correlation_engine(normalized)\n",
+        "siem_alerts = generate_alerts(correlated)\n",
+        "\n",
+        "print(\"Normalized Events:\")\n",
+        "for event in normalized:\n",
+        "    print(event)\n",
+        "\n",
+        "print(\"\\nCorrelated High-Severity Events:\")\n",
+        "for event in correlated:\n",
+        "    print(event)\n",
+        "\n",
+        "print(\"\\nGenerated Alerts:\")\n",
+        "for alert in siem_alerts:\n",
+        "    print(alert)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "OMsL00ZUDKTQ",
+        "outputId": "d70b5c60-ce1c-43ee-e9da-230f41a52153"
+      },
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Normalized Events:\n",
+            "{'source': 'firewall', 'event_type': 'blocked', 'severity': 'high'}\n",
+            "{'source': 'antivirus', 'event_type': 'malware_detected', 'severity': 'high'}\n",
+            "{'source': 'server', 'event_type': 'login_success', 'severity': 'low'}\n",
+            "\n",
+            "Correlated High-Severity Events:\n",
+            "{'source': 'firewall', 'event_type': 'blocked', 'severity': 'high'}\n",
+            "{'source': 'antivirus', 'event_type': 'malware_detected', 'severity': 'high'}\n",
+            "\n",
+            "Generated Alerts:\n",
+            "ALERT: firewall reported blocked\n",
+            "ALERT: antivirus reported malware_detected\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
