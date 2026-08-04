@@ -1,0 +1,80 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyM+qmNFCw8jSRDVFJaWGGCz",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-16\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 20,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "pR-P4nGQ3h4k",
+        "outputId": "d769d34b-5689-4155-aec8-acd65c425dcc"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Request Count\n",
+            "203.0.113.99 : 15\n",
+            "ALERT: Possible DoS Attack from 203.0.113.99\n",
+            "10.0.0.5 : 3\n"
+          ]
+        }
+      ],
+      "source": [
+        "from collections import Counter\n",
+        "import re\n",
+        "\n",
+        "with open(\"server.log\", \"w\") as f:\n",
+        "    for i in range(15):\n",
+        "        f.write(f\"2026-07-08 Request from 203.0.113.99\\n\")\n",
+        "\n",
+        "    for i in range(3):\n",
+        "        f.write(f\"2026-07-08 Request from 10.0.0.5\\n\")\n",
+        "\n",
+        "counter = Counter()\n",
+        "\n",
+        "with open(\"server.log\") as f:\n",
+        "    for line in f:\n",
+        "        match = re.search(r\"(\\d+\\.\\d+\\.\\d+\\.\\d+)\", line)\n",
+        "        if match:\n",
+        "            counter[match.group()] += 1\n",
+        "\n",
+        "print(\"Request Count\")\n",
+        "\n",
+        "for ip, count in counter.items():\n",
+        "    print(ip, \":\", count)\n",
+        "\n",
+        "    if count >= 10:\n",
+        "        print(\"ALERT: Possible DoS Attack from\", ip)"
+      ]
+    }
+  ]
+}
