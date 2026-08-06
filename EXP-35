@@ -1,0 +1,150 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOd1g96jExENerqWCmlo5lO",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-35\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 13,
+      "metadata": {
+        "id": "BifdekMcc9c7"
+      },
+      "outputs": [],
+      "source": [
+        "\n",
+        "ROLE_REQUIREMENTS = {\n",
+        "    \"intern\": {\"read_reports\"},\n",
+        "    \"analyst\": {\"read_reports\", \"write_reports\"},\n",
+        "    \"admin\": {\n",
+        "        \"read_reports\",\n",
+        "        \"write_reports\",\n",
+        "        \"manage_users\",\n",
+        "        \"manage_servers\"\n",
+        "    },\n",
+        "}\n",
+        "\n",
+        "\n",
+        "def find_over_privileged_users(users, role_requirements=ROLE_REQUIREMENTS):\n",
+        "    \"\"\"\n",
+        "    users:\n",
+        "    {\n",
+        "        username: {\n",
+        "            \"role\": str,\n",
+        "            \"granted_permissions\": set\n",
+        "        }\n",
+        "    }\n",
+        "\n",
+        "    Returns:\n",
+        "    {\n",
+        "        username: excess_permissions\n",
+        "    }\n",
+        "\n",
+        "    Identifies users who have permissions beyond those required\n",
+        "    for their assigned role.\n",
+        "    \"\"\"\n",
+        "\n",
+        "    violations = {}\n",
+        "\n",
+        "    for username, info in users.items():\n",
+        "\n",
+        "        required = role_requirements.get(info[\"role\"], set())\n",
+        "\n",
+        "        excess = info[\"granted_permissions\"] - required\n",
+        "\n",
+        "        if excess:\n",
+        "            violations[username] = excess\n",
+        "\n",
+        "    return violations"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment7():\n",
+        "\n",
+        "    users = {\n",
+        "\n",
+        "        \"jdoe\": {\n",
+        "            \"role\": \"intern\",\n",
+        "            \"granted_permissions\": {\"read_reports\"}\n",
+        "        },\n",
+        "\n",
+        "        \"asmith\": {\n",
+        "            \"role\": \"analyst\",\n",
+        "            \"granted_permissions\": {\n",
+        "                \"read_reports\",\n",
+        "                \"write_reports\"\n",
+        "            }\n",
+        "        },\n",
+        "\n",
+        "        \"kintern\": {\n",
+        "            \"role\": \"intern\",\n",
+        "            \"granted_permissions\": {\n",
+        "                \"read_reports\",\n",
+        "                \"manage_users\",\n",
+        "                \"manage_servers\"\n",
+        "            }\n",
+        "        }\n",
+        "    }\n",
+        "\n",
+        "    violations = find_over_privileged_users(users)\n",
+        "\n",
+        "    assert \"jdoe\" not in violations\n",
+        "\n",
+        "    assert \"asmith\" not in violations\n",
+        "\n",
+        "    assert \"kintern\" in violations\n",
+        "\n",
+        "    assert violations[\"kintern\"] == {\n",
+        "        \"manage_users\",\n",
+        "        \"manage_servers\"\n",
+        "    }\n",
+        "\n",
+        "    print(\"All test cases passed.\")\n",
+        "\n",
+        "\n",
+        "test_experiment7()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "9hPCf0L3eRCp",
+        "outputId": "b6e83328-afab-4d9e-ca88-912c2fa89f03"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
