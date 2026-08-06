@@ -1,0 +1,144 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyO56x4cwOmGTEC9Cj8dl6wa",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-30\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "id": "BifdekMcc9c7"
+      },
+      "outputs": [],
+      "source": [
+        "def handle_outbound_syn(packet, state_table, allow_rules):\n",
+        "    \"\"\"\n",
+        "    packet: {\"src\", \"sport\", \"dst\", \"dport\"} outbound SYN.\n",
+        "\n",
+        "    If (dst, dport) is permitted by allow_rules, record state so the\n",
+        "    matching return traffic will be permitted automatically.\n",
+        "    \"\"\"\n",
+        "    key = (packet[\"dst\"], packet[\"dport\"])\n",
+        "\n",
+        "    if key in allow_rules:\n",
+        "        state_table[\n",
+        "            (packet[\"src\"], packet[\"sport\"], packet[\"dst\"], packet[\"dport\"])\n",
+        "        ] = \"ESTABLISHED\"\n",
+        "        return \"allow\"\n",
+        "\n",
+        "    return \"deny\"\n",
+        "\n",
+        "\n",
+        "def handle_inbound_packet(packet, state_table):\n",
+        "    \"\"\"\n",
+        "    packet: {\"src\", \"sport\", \"dst\", \"dport\"} inbound packet claiming to\n",
+        "    be a response.\n",
+        "\n",
+        "    Only allowed if it matches an existing state-table entry\n",
+        "    for the original outbound connection (reversed direction).\n",
+        "    \"\"\"\n",
+        "    key = (\n",
+        "        packet[\"dst\"],\n",
+        "        packet[\"dport\"],\n",
+        "        packet[\"src\"],\n",
+        "        packet[\"sport\"]\n",
+        "    )\n",
+        "\n",
+        "    if key in state_table:\n",
+        "        return \"allow\"\n",
+        "\n",
+        "    return \"deny\""
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment2():\n",
+        "    state_table = {}\n",
+        "\n",
+        "    allow_rules = {\n",
+        "        (\"93.184.216.34\", 443)\n",
+        "    }\n",
+        "\n",
+        "    outbound = {\n",
+        "        \"src\": \"10.0.0.20\",\n",
+        "        \"sport\": 51000,\n",
+        "        \"dst\": \"93.184.216.34\",\n",
+        "        \"dport\": 443\n",
+        "    }\n",
+        "\n",
+        "    assert handle_outbound_syn(outbound, state_table, allow_rules) == \"allow\"\n",
+        "\n",
+        "    assert (\n",
+        "        outbound[\"src\"],\n",
+        "        outbound[\"sport\"],\n",
+        "        outbound[\"dst\"],\n",
+        "        outbound[\"dport\"]\n",
+        "    ) in state_table\n",
+        "\n",
+        "    response = {\n",
+        "        \"src\": \"93.184.216.34\",\n",
+        "        \"sport\": 443,\n",
+        "        \"dst\": \"10.0.0.20\",\n",
+        "        \"dport\": 51000\n",
+        "    }\n",
+        "\n",
+        "    assert handle_inbound_packet(response, state_table) == \"allow\"\n",
+        "\n",
+        "    unsolicited = {\n",
+        "        \"src\": \"203.0.113.9\",\n",
+        "        \"sport\": 4444,\n",
+        "        \"dst\": \"10.0.0.20\",\n",
+        "        \"dport\": 51000\n",
+        "    }\n",
+        "\n",
+        "    assert handle_inbound_packet(unsolicited, state_table) == \"deny\"\n",
+        "\n",
+        "    print(\"All test cases passed.\")\n",
+        "\n",
+        "\n",
+        "test_experiment2()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "9hPCf0L3eRCp",
+        "outputId": "94b2810c-feb6-4fde-c5c1-36f31277e43c"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
