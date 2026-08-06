@@ -1,0 +1,104 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMj0dPITyVzhm0Zoxfej6EN",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-34\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 11,
+      "metadata": {
+        "id": "BifdekMcc9c7"
+      },
+      "outputs": [],
+      "source": [
+        "\n",
+        "SEGMENTATION_POLICY = {\n",
+        "    (\"Guest\", \"Guest\"): True,\n",
+        "    (\"Guest\", \"Corporate\"): False,\n",
+        "    (\"Guest\", \"Medical\"): False,\n",
+        "\n",
+        "    (\"Corporate\", \"Corporate\"): True,\n",
+        "    (\"Corporate\", \"Medical\"): False,\n",
+        "\n",
+        "    (\"Admin\", \"Medical\"): True,\n",
+        "    (\"Admin\", \"Corporate\"): True,\n",
+        "    (\"Admin\", \"Admin\"): True,\n",
+        "}\n",
+        "\n",
+        "\n",
+        "def can_communicate(src_segment, dst_segment, policy=SEGMENTATION_POLICY):\n",
+        "    \"\"\"\n",
+        "    Returns True if communication is allowed according to the\n",
+        "    network segmentation policy.\n",
+        "\n",
+        "    Fail-safe default:\n",
+        "    Any undefined segment pair is denied.\n",
+        "    \"\"\"\n",
+        "    return policy.get((src_segment, dst_segment), False)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment6():\n",
+        "\n",
+        "    assert can_communicate(\"Guest\", \"Medical\") is False\n",
+        "\n",
+        "    assert can_communicate(\"Guest\", \"Corporate\") is False\n",
+        "\n",
+        "    assert can_communicate(\"Admin\", \"Medical\") is True\n",
+        "\n",
+        "    assert can_communicate(\"Admin\", \"Corporate\") is True\n",
+        "\n",
+        "    assert can_communicate(\"Corporate\", \"Corporate\") is True\n",
+        "\n",
+        "    assert can_communicate(\"IoT\", \"Corporate\") is False\n",
+        "\n",
+        "    print(\"All test cases passed.\")\n",
+        "\n",
+        "\n",
+        "test_experiment6()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "9hPCf0L3eRCp",
+        "outputId": "5f4e261d-a21c-46b7-af38-ce1a429ee15c"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
