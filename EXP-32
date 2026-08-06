@@ -1,0 +1,120 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNbjug+e/Tsv6Q9CXeUhrN3",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-32\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 7,
+      "metadata": {
+        "id": "BifdekMcc9c7"
+      },
+      "outputs": [],
+      "source": [
+        "def ips_process(packet, rules, whitelist=None):\n",
+        "    \"\"\"\n",
+        "    Like scan_packet, but decides whether to BLOCK (untrusted source)\n",
+        "    or ALLOW-WITH-LOG (source is on the tuning whitelist).\n",
+        "    \"\"\"\n",
+        "\n",
+        "    whitelist = whitelist or set()\n",
+        "\n",
+        "    alerts = scan_packet(packet, rules)\n",
+        "\n",
+        "    if not alerts:\n",
+        "        return {\n",
+        "            \"action\": \"allow\",\n",
+        "            \"alerts\": []\n",
+        "        }\n",
+        "\n",
+        "    if packet.get(\"src_ip\") in whitelist:\n",
+        "        return {\n",
+        "            \"action\": \"allow\",\n",
+        "            \"alerts\": alerts,\n",
+        "            \"note\": \"source whitelisted, alert suppressed from blocking\"\n",
+        "        }\n",
+        "\n",
+        "    return {\n",
+        "        \"action\": \"block\",\n",
+        "        \"alerts\": alerts\n",
+        "    }"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment4():\n",
+        "\n",
+        "    attack_packet = {\n",
+        "        \"proto\": \"tcp\",\n",
+        "        \"dst_port\": 80,\n",
+        "        \"payload\": \"union select username,password from users\",\n",
+        "        \"src_ip\": \"203.0.113.50\"\n",
+        "    }\n",
+        "\n",
+        "    result = ips_process(attack_packet, IDS_RULES)\n",
+        "\n",
+        "    assert result[\"action\"] == \"block\"\n",
+        "\n",
+        "    partner_packet = dict(\n",
+        "        attack_packet,\n",
+        "        src_ip=\"198.51.100.10\"\n",
+        "    )\n",
+        "\n",
+        "    result2 = ips_process(\n",
+        "        partner_packet,\n",
+        "        IDS_RULES,\n",
+        "        whitelist={\"198.51.100.10\"}\n",
+        "    )\n",
+        "\n",
+        "    assert result2[\"action\"] == \"allow\"\n",
+        "    assert \"note\" in result2\n",
+        "\n",
+        "    print(\"All test cases passed.\")\n",
+        "\n",
+        "\n",
+        "test_experiment4()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "9hPCf0L3eRCp",
+        "outputId": "decf5f63-4b9e-47e0-cb02-b2e9a6bc430b"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
