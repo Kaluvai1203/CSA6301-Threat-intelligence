@@ -1,0 +1,109 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMeuEtNaktrLzLzh6kIy1SQ",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-33\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 9,
+      "metadata": {
+        "id": "BifdekMcc9c7"
+      },
+      "outputs": [],
+      "source": [
+        "def xor_cipher(data: bytes, key: bytes) -> bytes:\n",
+        "    \"\"\"\n",
+        "    Encrypts/Decrypts data using XOR with a repeating key.\n",
+        "    \"\"\"\n",
+        "    return bytes(\n",
+        "        b ^ key[i % len(key)]\n",
+        "        for i, b in enumerate(data)\n",
+        "    )\n",
+        "\n",
+        "\n",
+        "def encrypt_tunnel(plaintext: str, key: str) -> bytes:\n",
+        "    \"\"\"\n",
+        "    Encrypt plaintext before sending through the VPN tunnel.\n",
+        "    \"\"\"\n",
+        "    return xor_cipher(plaintext.encode(), key.encode())\n",
+        "\n",
+        "\n",
+        "def decrypt_tunnel(ciphertext: bytes, key: str) -> str:\n",
+        "    \"\"\"\n",
+        "    Decrypt ciphertext received from the VPN tunnel.\n",
+        "    \"\"\"\n",
+        "    return xor_cipher(ciphertext, key.encode()).decode(errors=\"replace\")"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment5():\n",
+        "\n",
+        "    key = \"VPN-Shared-Secret-Key\"\n",
+        "\n",
+        "    plaintext = \"Transfer $50,000 to account 998211 - confidential\"\n",
+        "\n",
+        "    ciphertext = encrypt_tunnel(plaintext, key)\n",
+        "\n",
+        "    assert ciphertext != plaintext.encode()\n",
+        "\n",
+        "    assert b\"Transfer\" not in ciphertext, \\\n",
+        "        \"Sensitive plaintext must not be visible in captured tunnel data\"\n",
+        "\n",
+        "    recovered = decrypt_tunnel(ciphertext, key)\n",
+        "\n",
+        "    assert recovered == plaintext\n",
+        "\n",
+        "    wrong_recovered = decrypt_tunnel(ciphertext, \"Wrong-Key\")\n",
+        "\n",
+        "    assert wrong_recovered != plaintext\n",
+        "\n",
+        "    print(\"All test cases passed.\")\n",
+        "\n",
+        "\n",
+        "test_experiment5()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "9hPCf0L3eRCp",
+        "outputId": "38badbe0-a86b-43d3-f060-42f090a9bd86"
+      },
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
