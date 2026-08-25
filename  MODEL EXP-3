@@ -1,0 +1,84 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPwyLgH3/OHABS+9IRnvI8j",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/%20MODEL%20EXP-3\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 24,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v9jCJKvv4yiK",
+        "outputId": "b99eb7d9-5b1e-46b7-8d44-b59eaa4d0b05"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Enter policy text: Scope: Applies to all employees. Roles and Responsibilities: IT manages security.\n",
+            "Missing elements:\n",
+            "- Enforcement\n",
+            "- Review Cycle\n",
+            "- Approval Authority\n"
+          ]
+        }
+      ],
+      "source": [
+        "def check_policy_compliance(policy_text):\n",
+        "    required = [\n",
+        "        (\"Scope\", \"scope\"),\n",
+        "        (\"Roles and Responsibilities\", \"responsibilities\"),\n",
+        "        (\"Enforcement\", \"enforcement\"),\n",
+        "        (\"Review Cycle\", \"review\"),\n",
+        "        (\"Approval Authority\", \"approved by\")\n",
+        "    ]\n",
+        "\n",
+        "    text = policy_text.lower()\n",
+        "\n",
+        "    return [\n",
+        "        element\n",
+        "        for element, keyword in required\n",
+        "        if keyword not in text\n",
+        "    ]\n",
+        "\n",
+        "\n",
+        "policy = input(\"Enter policy text: \")\n",
+        "\n",
+        "missing = check_policy_compliance(policy)\n",
+        "\n",
+        "if missing:\n",
+        "    print(\"Missing elements:\")\n",
+        "    for item in missing:\n",
+        "        print(\"-\", item)\n",
+        "else:\n",
+        "    print(\"All required governance elements are present.\")\n"
+      ]
+    }
+  ]
+}
