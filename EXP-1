@@ -4,7 +4,7 @@
   "metadata": {
     "colab": {
       "provenance": [],
-      "authorship_tag": "ABX9TyOuC/Gce3mG7djckUh2TGRc",
+      "authorship_tag": "ABX9TyOXwX3DAl85a4NEHcu6qvhZ",
       "include_colab_link": true
     },
     "kernelspec": {
@@ -23,55 +23,58 @@
         "colab_type": "text"
       },
       "source": [
-        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-1\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/MODEL-LAB/EXP-1\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
       ]
     },
     {
       "cell_type": "code",
-      "execution_count": 4,
+      "execution_count": 21,
       "metadata": {
         "colab": {
           "base_uri": "https://localhost:8080/"
         },
-        "id": "pR-P4nGQ3h4k",
-        "outputId": "37103493-b451-4bd9-d1a3-d730a1763a2c"
+        "id": "v9jCJKvv4yiK",
+        "outputId": "cd17e014-65e1-451b-d489-33b6586f7ad0"
       },
       "outputs": [
         {
           "output_type": "stream",
           "name": "stdout",
           "text": [
-            "Original : AttackAtDawn\n",
-            "Encrypted: DwwdfnDwGdzq\n",
-            "Decrypted: AttackAtDawn\n"
+            "Enter business scenario: The bank wants to detect fraudulent credit card transactions.\n",
+            "Banking Fraud Prevention\n"
           ]
         }
       ],
       "source": [
-        "def caesar_encrypt(text, shift):\n",
-        "    result = \"\"\n",
-        "    for ch in text:\n",
-        "        if ch.isalpha():\n",
-        "            base = ord('A') if ch.isupper() else ord('a')\n",
-        "            result += chr((ord(ch) - base + shift) % 26 + base)\n",
-        "        else:\n",
-        "            result += ch\n",
-        "    return result\n",
+        "def classify_threat_intelligence_area(description):\n",
+        "    text = description.lower()\n",
+        "\n",
+        "    rules = [\n",
+        "        (\"Banking Fraud Prevention\", [\n",
+        "            \"bank\", \"credit card\", \"financial fraud\", \"transaction fraud\",\n",
+        "            \"account takeover\", \"payment fraud\"\n",
+        "        ]),\n",
+        "        (\"Healthcare Data Protection\", [\n",
+        "            \"hospital\", \"patient\", \"medical record\", \"healthcare\",\n",
+        "            \"protected health information\", \"ehr\"\n",
+        "        ]),\n",
+        "        (\"E-Commerce Fraud Prevention\", [\n",
+        "            \"e-commerce\", \"online shopping\", \"online store\", \"shopping cart\",\n",
+        "            \"merchant\", \"online payment\"\n",
+        "        ]),\n",
+        "    ]\n",
+        "\n",
+        "    for area, keywords in rules:\n",
+        "        if any(keyword in text for keyword in keywords):\n",
+        "            return area\n",
+        "\n",
+        "    return \"General Threat Intelligence\"\n",
         "\n",
         "\n",
-        "def caesar_decrypt(text, shift):\n",
-        "    return caesar_encrypt(text, -shift)\n",
-        "\n",
-        "\n",
-        "message = \"AttackAtDawn\"\n",
-        "shift = 3\n",
-        "\n",
-        "enc = caesar_encrypt(message, shift)\n",
-        "dec = caesar_decrypt(enc, shift)\n",
-        "\n",
-        "print(\"Original :\", message)\n",
-        "print(\"Encrypted:\", enc)\n",
-        "print(\"Decrypted:\", dec)"
+        "description = input(\"Enter business scenario: \")\n",
+        "print(classify_threat_intelligence_area(description))\n",
+        "\n"
       ]
     }
   ]
