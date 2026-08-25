@@ -1,0 +1,74 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMmHg4IHq86tiPBh9Vo/yZ8",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/%20MODEL%20EXP-1\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 23,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v9jCJKvv4yiK",
+        "outputId": "59a32946-1902-47b7-b659-97c1dd7377c5"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Enter business scenario: The bank wants to detect fraudulent credit card transactions.\n",
+            "Application Area: Banking Fraud Prevention\n"
+          ]
+        }
+      ],
+      "source": [
+        "def classify_threat_intelligence_area(description):\n",
+        "    text = description.lower()\n",
+        "\n",
+        "    rules = [\n",
+        "        (\"Banking Fraud Prevention\",\n",
+        "         [\"bank\", \"credit card\", \"financial fraud\", \"payment fraud\"]),\n",
+        "        (\"Healthcare Data Protection\",\n",
+        "         [\"hospital\", \"patient\", \"medical record\", \"healthcare\"]),\n",
+        "        (\"E-Commerce Fraud Prevention\",\n",
+        "         [\"e-commerce\", \"online shopping\", \"merchant\", \"online payment\"])\n",
+        "    ]\n",
+        "\n",
+        "    for area, keywords in rules:\n",
+        "        if any(keyword in text for keyword in keywords):\n",
+        "            return area\n",
+        "\n",
+        "    return \"General Threat Intelligence\"\n",
+        "\n",
+        "\n",
+        "description = input(\"Enter business scenario: \")\n",
+        "print(\"Application Area:\", classify_threat_intelligence_area(description))\n"
+      ]
+    }
+  ]
+}
