@@ -1,0 +1,117 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOxza8SJuWXzfercaR6YGum",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-46\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 17,
+      "metadata": {
+        "id": "v9jCJKvv4yiK"
+      },
+      "outputs": [],
+      "source": [
+        "def triage_alert(alert_description, rules):\n",
+        "    text = alert_description.lower()\n",
+        "\n",
+        "    for priority, keywords in rules:\n",
+        "        for kw in keywords:\n",
+        "            if kw in text:\n",
+        "                return priority\n",
+        "\n",
+        "    return \"P4 - Low\"\n",
+        "\n",
+        "\n",
+        "SOC_TRIAGE_RULES = [\n",
+        "    (\"P1 - Critical\", [\n",
+        "        \"ransomware detonation confirmed\",\n",
+        "        \"domain admin account compromised\",\n",
+        "        \"active data exfiltration in progress\",\n",
+        "    ]),\n",
+        "\n",
+        "    (\"P2 - High\", [\n",
+        "        \"malware detected on endpoint\",\n",
+        "        \"multiple failed administrator logins\",\n",
+        "        \"command-and-control beacon detected\",\n",
+        "    ]),\n",
+        "\n",
+        "    (\"P3 - Medium\", [\n",
+        "        \"acceptable use policy violation\",\n",
+        "        \"login from an unusual location\",\n",
+        "        \"port scan detected against a server\",\n",
+        "    ]),\n",
+        "]\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment9():\n",
+        "    d1 = \"SIEM confirms active data exfiltration in progress from the finance share.\"\n",
+        "    assert triage_alert(\n",
+        "        d1, SOC_TRIAGE_RULES\n",
+        "    ) == \"P1 - Critical\"\n",
+        "\n",
+        "    d2 = \"Endpoint agent reports malware detected on endpoint WKS-204.\"\n",
+        "    assert triage_alert(\n",
+        "        d2, SOC_TRIAGE_RULES\n",
+        "    ) == \"P2 - High\"\n",
+        "\n",
+        "    d3 = \"A login from an unusual location was flagged for a sales account.\"\n",
+        "    assert triage_alert(\n",
+        "        d3, SOC_TRIAGE_RULES\n",
+        "    ) == \"P3 - Medium\"\n",
+        "\n",
+        "    d4 = \"Scheduled maintenance window notification received.\"\n",
+        "    assert triage_alert(\n",
+        "        d4, SOC_TRIAGE_RULES\n",
+        "    ) == \"P4 - Low\"\n",
+        "\n",
+        "    print(\"All test cases passed.\")\n",
+        "\n",
+        "\n",
+        "test_experiment9()\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Pg6IqMVI5Uvo",
+        "outputId": "e6625c8b-aeed-49e4-d3e9-35aa99103411"
+      },
+      "execution_count": 18,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
