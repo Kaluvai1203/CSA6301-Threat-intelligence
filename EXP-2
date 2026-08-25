@@ -4,7 +4,7 @@
   "metadata": {
     "colab": {
       "provenance": [],
-      "authorship_tag": "ABX9TyN2Ie7x7PYC9XCdyfzDwDT0",
+      "authorship_tag": "ABX9TyNj1NcIjv3B9ltOsGjn1GB1",
       "include_colab_link": true
     },
     "kernelspec": {
@@ -23,55 +23,42 @@
         "colab_type": "text"
       },
       "source": [
-        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-2\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/MODEL-LAB/EXP-2\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
       ]
     },
     {
       "cell_type": "code",
-      "execution_count": 5,
+      "execution_count": 22,
       "metadata": {
         "colab": {
           "base_uri": "https://localhost:8080/"
         },
-        "id": "pR-P4nGQ3h4k",
-        "outputId": "ddde51bb-b461-445d-ba03-0b3f20753be9"
+        "id": "v9jCJKvv4yiK",
+        "outputId": "2742bfde-fd14-4f6e-e82a-8aba084c1db0"
       },
       "outputs": [
         {
-          "output_type": "stream",
           "name": "stdout",
+          "output_type": "stream",
           "text": [
-            "Original hash : 5a54470e71678d9dbac7ffc51f2cd2a76cc1e8e0d1096bd698eef42229f687d7\n",
-            "Modified hash : 66aa68df2112cb433631ca8675173a88a7e6b2b8a64a4942d01221ee3e4ce2e2\n",
-            "Integrity check: FAILED (hash changed) -> file was modified\n"
+            "Enter target host: 127.0.0.1\n"
           ]
         }
       ],
       "source": [
-        "import hashlib\n",
+        "import socket\n",
         "\n",
-        "def file_hash(filename, algo=\"sha256\"):\n",
-        "    h = hashlib.new(algo)\n",
-        "    with open(filename, \"rb\") as f:\n",
-        "        h.update(f.read())\n",
-        "    return h.hexdigest()\n",
+        "target = input(\"Enter target host: \")\n",
         "\n",
-        "with open(\"sample.txt\", \"w\") as f:\n",
-        "    f.write(\"Confidential report v1\")\n",
+        "for port in range(1, 1025):\n",
+        "    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n",
+        "    sock.settimeout(0.2)\n",
         "\n",
-        "original_hash = file_hash(\"sample.txt\")\n",
-        "print(\"Original hash :\", original_hash)\n",
-        "\n",
-        "with open(\"sample.txt\", \"a\") as f:\n",
-        "    f.write(\" - tampered!\")\n",
-        "\n",
-        "modified_hash = file_hash(\"sample.txt\")\n",
-        "print(\"Modified hash :\", modified_hash)\n",
-        "\n",
-        "if original_hash == modified_hash:\n",
-        "    print(\"Integrity check: PASSED (file not modified)\")\n",
-        "else:\n",
-        "    print(\"Integrity check: FAILED (hash changed) -> file was modified\")"
+        "    try:\n",
+        "        if sock.connect_ex((target, port)) == 0:\n",
+        "            print(f\"Port {port} is OPEN\")\n",
+        "    finally:\n",
+        "        sock.close()\n"
       ]
     }
   ]
