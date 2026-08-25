@@ -1,0 +1,88 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOkoGKzctfgTWwsetcBsDr1",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/%20MODEL%20EXP-4\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 25,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v9jCJKvv4yiK",
+        "outputId": "bc98fcb7-4c94-4c4e-b2e1-3e72e172bfad"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Enter message: Confidential Data\n",
+            "Enter shared key: secret123\n",
+            "Encrypted data: 53abf6a8a1a9ba1fafae699b3bb631251d\n",
+            "Decrypted data: Confidential Data\n"
+          ]
+        }
+      ],
+      "source": [
+        "import hashlib\n",
+        "\n",
+        "def keystream(key, length):\n",
+        "    result = b\"\"\n",
+        "    counter = 0\n",
+        "\n",
+        "    while len(result) < length:\n",
+        "        result += hashlib.sha256(\n",
+        "            (key + str(counter)).encode()\n",
+        "        ).digest()\n",
+        "        counter += 1\n",
+        "\n",
+        "    return result[:length]\n",
+        "\n",
+        "\n",
+        "def encrypt(message, key):\n",
+        "    data = message.encode()\n",
+        "    stream = keystream(key, len(data))\n",
+        "    return bytes(a ^ b for a, b in zip(data, stream))\n",
+        "\n",
+        "\n",
+        "def decrypt(ciphertext, key):\n",
+        "    stream = keystream(key, len(ciphertext))\n",
+        "    return bytes(a ^ b for a, b in zip(ciphertext, stream)).decode()\n",
+        "\n",
+        "\n",
+        "message = input(\"Enter message: \")\n",
+        "key = input(\"Enter shared key: \")\n",
+        "\n",
+        "encrypted = encrypt(message, key)\n",
+        "\n",
+        "print(\"Encrypted data:\", encrypted.hex())\n",
+        "print(\"Decrypted data:\", decrypt(encrypted, key))\n"
+      ]
+    }
+  ]
+}
