@@ -1,0 +1,65 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNj1NcIjv3B9ltOsGjn1GB1",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/%20MODEL%20EXP-2\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 22,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v9jCJKvv4yiK",
+        "outputId": "2742bfde-fd14-4f6e-e82a-8aba084c1db0"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Enter target host: 127.0.0.1\n"
+          ]
+        }
+      ],
+      "source": [
+        "import socket\n",
+        "\n",
+        "target = input(\"Enter target host: \")\n",
+        "\n",
+        "for port in range(1, 1025):\n",
+        "    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\n",
+        "    sock.settimeout(0.2)\n",
+        "\n",
+        "    try:\n",
+        "        if sock.connect_ex((target, port)) == 0:\n",
+        "            print(f\"Port {port} is OPEN\")\n",
+        "    finally:\n",
+        "        sock.close()\n"
+      ]
+    }
+  ]
+}
