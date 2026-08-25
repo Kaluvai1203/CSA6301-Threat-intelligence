@@ -1,0 +1,157 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPecOrw5dylOo9DZzv/LUzi",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-47\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 19,
+      "metadata": {
+        "id": "v9jCJKvv4yiK"
+      },
+      "outputs": [],
+      "source": [
+        "def classify_root_cause(case_description, rules):\n",
+        "    text = case_description.lower()\n",
+        "\n",
+        "    for cause, keywords in rules:\n",
+        "        for kw in keywords:\n",
+        "            if kw in text:\n",
+        "                return cause\n",
+        "\n",
+        "    return \"Root Cause Undetermined\"\n",
+        "\n",
+        "\n",
+        "ROOT_CAUSE_RULES = [\n",
+        "    (\"Phishing / Social Engineering\", [\n",
+        "        \"clicked a link in a phishing email\",\n",
+        "        \"entered their credentials on a fake login page\",\n",
+        "        \"tricked over a phone call into resetting the password\",\n",
+        "    ]),\n",
+        "\n",
+        "    (\"Unpatched Vulnerability\", [\n",
+        "        \"exploited a known unpatched vulnerability\",\n",
+        "        \"outdated software version that was never patched\",\n",
+        "        \"known cve was left unaddressed for months\",\n",
+        "    ]),\n",
+        "\n",
+        "    (\"Misconfiguration\", [\n",
+        "        \"storage bucket was left publicly accessible by mistake\",\n",
+        "        \"default administrator credentials were never changed\",\n",
+        "        \"firewall rule was misconfigured\",\n",
+        "    ]),\n",
+        "\n",
+        "    (\"Insider Threat\", [\n",
+        "        \"a disgruntled former employee retained access\",\n",
+        "        \"an authorized employee intentionally misused their access\",\n",
+        "        \"insider sold company data\",\n",
+        "    ]),\n",
+        "\n",
+        "    (\"Third-Party / Supply Chain Compromise\", [\n",
+        "        \"a trusted vendor's software update was compromised\",\n",
+        "        \"third-party contractor's credentials were breached\",\n",
+        "        \"supply chain partner was the initial entry point\",\n",
+        "    ]),\n",
+        "]\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment10():\n",
+        "    c1 = (\n",
+        "        \"An employee clicked a link in a phishing email and entered \"\n",
+        "        \"their credentials on a fake login page.\"\n",
+        "    )\n",
+        "    assert classify_root_cause(\n",
+        "        c1, ROOT_CAUSE_RULES\n",
+        "    ) == \"Phishing / Social Engineering\"\n",
+        "\n",
+        "    c2 = (\n",
+        "        \"Attackers exploited a known unpatched vulnerability \"\n",
+        "        \"in the company's web server.\"\n",
+        "    )\n",
+        "    assert classify_root_cause(\n",
+        "        c2, ROOT_CAUSE_RULES\n",
+        "    ) == \"Unpatched Vulnerability\"\n",
+        "\n",
+        "    c3 = (\n",
+        "        \"A cloud storage bucket was left publicly accessible by mistake, \"\n",
+        "        \"exposing customer files.\"\n",
+        "    )\n",
+        "    assert classify_root_cause(\n",
+        "        c3, ROOT_CAUSE_RULES\n",
+        "    ) == \"Misconfiguration\"\n",
+        "\n",
+        "    c4 = (\n",
+        "        \"Investigators determined a disgruntled former employee \"\n",
+        "        \"retained access after termination.\"\n",
+        "    )\n",
+        "    assert classify_root_cause(\n",
+        "        c4, ROOT_CAUSE_RULES\n",
+        "    ) == \"Insider Threat\"\n",
+        "\n",
+        "    c5 = (\n",
+        "        \"The breach originated when a trusted vendor's software \"\n",
+        "        \"update was compromised.\"\n",
+        "    )\n",
+        "    assert classify_root_cause(\n",
+        "        c5, ROOT_CAUSE_RULES\n",
+        "    ) == \"Third-Party / Supply Chain Compromise\"\n",
+        "\n",
+        "    c6 = (\n",
+        "        \"The cause of the incident could not be determined \"\n",
+        "        \"from available logs.\"\n",
+        "    )\n",
+        "    assert classify_root_cause(\n",
+        "        c6, ROOT_CAUSE_RULES\n",
+        "    ) == \"Root Cause Undetermined\"\n",
+        "\n",
+        "    print(\"All test cases passed.\")\n",
+        "\n",
+        "\n",
+        "test_experiment10()\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Pg6IqMVI5Uvo",
+        "outputId": "607449c8-1308-425d-e96f-8321bf984363"
+      },
+      "execution_count": 20,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
