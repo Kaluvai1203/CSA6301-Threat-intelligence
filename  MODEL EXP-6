@@ -1,0 +1,107 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyM/HWs60Pfsosds901LMU82",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/%20MODEL%20EXP-6\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 27,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v9jCJKvv4yiK",
+        "outputId": "227470bf-f286-46e2-8f2e-0947b98e3c3f"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Enter URL: http://login.verify.account.example.com\n",
+            "Risk Score: 6\n",
+            "- Suspicious keyword: login\n",
+            "- Suspicious keyword: verify\n",
+            "- Suspicious keyword: account\n",
+            "- Excessive subdomains\n",
+            "- No HTTPS\n",
+            "Result: Possible Phishing URL\n"
+          ]
+        }
+      ],
+      "source": [
+        "from urllib.parse import urlparse\n",
+        "import ipaddress\n",
+        "\n",
+        "def detect_phishing_url(url):\n",
+        "    score = 0\n",
+        "    indicators = []\n",
+        "\n",
+        "    text = url.lower()\n",
+        "    host = urlparse(url).hostname or \"\"\n",
+        "\n",
+        "    keywords = [\"login\", \"verify\", \"account\", \"password\"]\n",
+        "\n",
+        "    for keyword in keywords:\n",
+        "        if keyword in text:\n",
+        "            score += 1\n",
+        "            indicators.append(\"Suspicious keyword: \" + keyword)\n",
+        "\n",
+        "    try:\n",
+        "        ipaddress.ip_address(host)\n",
+        "        score += 2\n",
+        "        indicators.append(\"IP address used as domain\")\n",
+        "    except ValueError:\n",
+        "        pass\n",
+        "\n",
+        "    if len(host.split(\".\")) > 3:\n",
+        "        score += 2\n",
+        "        indicators.append(\"Excessive subdomains\")\n",
+        "\n",
+        "    if urlparse(url).scheme != \"https\":\n",
+        "        score += 1\n",
+        "        indicators.append(\"No HTTPS\")\n",
+        "\n",
+        "    return score, indicators\n",
+        "\n",
+        "\n",
+        "url = input(\"Enter URL: \")\n",
+        "\n",
+        "score, indicators = detect_phishing_url(url)\n",
+        "\n",
+        "print(\"Risk Score:\", score)\n",
+        "\n",
+        "for indicator in indicators:\n",
+        "    print(\"-\", indicator)\n",
+        "\n",
+        "if score >= 3:\n",
+        "    print(\"Result: Possible Phishing URL\")\n",
+        "else:\n",
+        "    print(\"Result: Low Risk\")\n"
+      ]
+    }
+  ]
+}
