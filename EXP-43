@@ -1,0 +1,119 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyNeQNo23DAcS0xWDqvM2E7L",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/EXP-43\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 11,
+      "metadata": {
+        "id": "v9jCJKvv4yiK"
+      },
+      "outputs": [],
+      "source": [
+        "def calculate_risk(likelihood, impact):\n",
+        "    if not (1 <= likelihood <= 5) or not (1 <= impact <= 5):\n",
+        "        raise ValueError(\n",
+        "            \"Likelihood and impact must each be between 1 and 5.\"\n",
+        "        )\n",
+        "\n",
+        "    score = likelihood * impact\n",
+        "\n",
+        "    if score <= 5:\n",
+        "        level = \"Low\"\n",
+        "    elif score <= 12:\n",
+        "        level = \"Medium\"\n",
+        "    elif score <= 19:\n",
+        "        level = \"High\"\n",
+        "    else:\n",
+        "        level = \"Critical\"\n",
+        "\n",
+        "    return {\n",
+        "        \"score\": score,\n",
+        "        \"level\": level\n",
+        "    }\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def test_experiment6():\n",
+        "    assert calculate_risk(1, 2) == {\n",
+        "        \"score\": 2,\n",
+        "        \"level\": \"Low\"\n",
+        "    }\n",
+        "\n",
+        "    assert calculate_risk(3, 4) == {\n",
+        "        \"score\": 12,\n",
+        "        \"level\": \"Medium\"\n",
+        "    }\n",
+        "\n",
+        "    assert calculate_risk(4, 4) == {\n",
+        "        \"score\": 16,\n",
+        "        \"level\": \"High\"\n",
+        "    }\n",
+        "\n",
+        "    assert calculate_risk(5, 5) == {\n",
+        "        \"score\": 25,\n",
+        "        \"level\": \"Critical\"\n",
+        "    }\n",
+        "\n",
+        "    assert calculate_risk(5, 4) == {\n",
+        "        \"score\": 20,\n",
+        "        \"level\": \"Critical\"\n",
+        "    }\n",
+        "\n",
+        "    try:\n",
+        "        calculate_risk(6, 1)\n",
+        "        assert False, \"Expected ValueError for out-of-range likelihood\"\n",
+        "    except ValueError:\n",
+        "        pass\n",
+        "\n",
+        "    print(\"All test cases passed.\")\n",
+        "\n",
+        "\n",
+        "test_experiment6()\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Pg6IqMVI5Uvo",
+        "outputId": "402f5a81-966c-4fd2-a267-cf5e1543e065"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "All test cases passed.\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
