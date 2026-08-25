@@ -1,0 +1,77 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyOqByL8xJUxiX3IgYbLGQnm",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Kaluvai1203/CSA6301-Threat-intelligence/blob/main/%20MODEL%20EXP-5\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 26,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "v9jCJKvv4yiK",
+        "outputId": "fab55bfe-fa18-4f62-bc83-3cda92270e3b"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Enter report description: Long-term cyber risk to the organization\n",
+            "Enter intended audience: Executive management\n",
+            "Classification: Strategic\n"
+          ]
+        }
+      ],
+      "source": [
+        "def classify_report(description, audience):\n",
+        "    text = (description + \" \" + audience).lower()\n",
+        "\n",
+        "    strategic = [\"executive\", \"management\", \"board\", \"long-term\"]\n",
+        "    tactical = [\"defender\", \"ttps\", \"tactics\", \"techniques\"]\n",
+        "    operational = [\"soc analyst\", \"ioc\", \"ip address\", \"incident\"]\n",
+        "\n",
+        "    if any(x in text for x in strategic):\n",
+        "        return \"Strategic\"\n",
+        "\n",
+        "    if any(x in text for x in tactical):\n",
+        "        return \"Tactical\"\n",
+        "\n",
+        "    if any(x in text for x in operational):\n",
+        "        return \"Operational\"\n",
+        "\n",
+        "    return \"Unclassified\"\n",
+        "\n",
+        "\n",
+        "description = input(\"Enter report description: \")\n",
+        "audience = input(\"Enter intended audience: \")\n",
+        "\n",
+        "print(\"Classification:\", classify_report(description, audience))\n"
+      ]
+    }
+  ]
+}
